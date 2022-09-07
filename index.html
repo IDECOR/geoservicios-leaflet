@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+   integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+   crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+   integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+   crossorigin=""></script>
+
+  <link rel="stylesheet" href="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.css" />
+  <script src="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.js"></script>
+
+  <title>Geoservicios IDECOR con Leaflet</title>
+  <style>
+    #map-container { height: 600px; }
+  </style>
+</head>
+<body>
+  <h1>Geoservicios IDECOR con Leaflet</h1>
+  <div id="map-container"></div>
+
+  <script>
+    var map = L.map('map-container').setView([-32, -64], 8);
+
+    // var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //   maxZoom: 19,
+    //   attribution: '© OpenStreetMap'
+    // });
+    // map.addLayer(osm);
+
+    var argenmap = L.tileLayer(' https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG:3857@png/{z}/{x}/{-y}.png', {
+      maxZoom: 19,
+      attribution: '© Argenmap'
+    });
+    map.addLayer(argenmap);
+
+
+
+    var departamentos = L.tileLayer.wms("https://idecor-ws.mapascordoba.gob.ar/geoserver/idecor/departamentos/wms", {
+      layers: 'departamentos',
+      format: 'image/png',
+      transparent: true,
+      attribution: "IDECOR"
+    });
+    map.addLayer(departamentos);
+
+    var red_vial_provincial = L.tileLayer.wms("https://idecor-ws.mapascordoba.gob.ar/geoserver/idecor/red_vial_provincial/wms", {
+      layers: 'red_vial_provincial',
+      format: 'image/png',
+      transparent: true,
+      attribution: "IDECOR"
+    });
+    map.addLayer(red_vial_provincial);
+
+    var marker = L.marker([-31.656818, -64.396725])
+      .bindPopup('Aeroclub de Alta Gracia')
+      .openPopup();
+    map.addLayer(marker);
+
+
+    var baseMaps = {
+      // 'OpenStreetMap': osm,
+      'Argenmap': argenmap
+    };
+
+    var overlayMaps = {
+      "Departamentos": departamentos,
+      "Red Vial Provincial": red_vial_provincial
+    };
+
+    var layerControl = L.control.layers(baseMaps, overlayMaps);
+    map.addControl(layerControl);
+
+    const options = {
+      unit: 'kilometres',
+      useSubunits: true,
+      // clearMeasurementsOnStop: true,
+      showClearControl: true
+    };
+
+    var polylineMeasure = L.control.polylineMeasure(options);
+    map.addControl(polylineMeasure);
+
+  </script>
+</body>
+</html>
